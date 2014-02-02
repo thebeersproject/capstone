@@ -5,7 +5,11 @@
 	<classpathentry kind="lib" path="/Users/nick/Downloads/mysql-connector-java-5.1.28/mysql-connector-java-5.1.28-bin.jar"/>
 	<classpathentry kind="lib" path="/Users/nick/Documents/workspace/Capstone/lib/jtools-o-s.jar"/>
 	<classpathentry kind="lib" path="/Users/nick/Documents/workspace/Capstone/lib/SC2-class-o-s.jar"/>
-	<classpathentry kind="lib" path="/Users/nick/Documents/workspace/Capstone/lib/VfeiMsg-o-s.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/nick/Documents/workspace/Capstone/lib/VfeiMsg-o-s.jar"/>
 	<classpathentry kind="lib" path="/Users/nick/Documents/workspace/Capstone/lib/mysql-connector-java-5.1.28-bin.jar"/>
+	<classpathentry kind="lib" path="/Users/nick/Documents/Capstone/capstone/eclipse/lib/VfeiMsg-o-s.jar"/>
+	<classpathentry kind="lib" path="/Users/nick/Documents/Capstone/capstone/eclipse/lib/jtools-o-s.jar"/>
+	<classpathentry kind="lib" path="/Users/nick/Documents/Capstone/capstone/eclipse/lib/mysql-connector-java-5.1.28-bin.jar"/>
+	<classpathentry kind="lib" path="/Users/nick/Documents/Capstone/capstone/eclipse/lib/SC2-class-o-s.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
