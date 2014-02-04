@@ -11,4 +11,4 @@ Commit files: "git commit" -> Enter a useful message in vi, then :wq
 Push files to master branch after commit: "git push origin master"
 Refresh branch from master: "git pull origin master"
 Reset current branch from master: "git reset --hard origin/master"
-
+Checking differences between your files and a branch: "git diff origin master"
