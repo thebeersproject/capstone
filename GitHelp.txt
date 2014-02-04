@@ -1,2 +1,14 @@
-Git help here...
+SETTING UP GIT
+Clone branch for starting: "git clone http://github.com/thebeersproject/capstone.git"
+Generating new ssh keys: "ssh-heygen -t rsa -C <email>"
+
+USEFUL GIT COMMANDS
+Make a branch: "git branch <name_of_your_branch>"
+Switch branches: "git checkout <name_of_branch>"
+Add a new file/modified file: "git add <file(s)>"
+Check which files will be committed: "git status"
+Commit files: "git commit" -> Enter a useful message in vi, then :wq
+Push files to master branch after commit: "git push origin master"
+Refresh branch from master: "git pull origin master"
+Reset current branch from master: "git reset --hard origin/master"
 
