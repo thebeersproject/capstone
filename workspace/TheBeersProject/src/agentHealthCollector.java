@@ -9,15 +9,21 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.systemagmbh.common.util.CSysStdMessage;
+//import de.systemagmbh.common.util.CSysStdMessage;
 import de.systemagmbh.components.message.vfei.CSysVfeiMessage;
 import de.systemagmbh.interfaces.message.CSysParseException;
-import de.systemagmbh.interfaces.message.ISysMessage;
-import de.systemagmbh.interfaces.message.ISysMessageItem;
+//import de.systemagmbh.interfaces.message.ISysMessage;
+//import de.systemagmbh.interfaces.message.ISysMessageItem;
 
+/**
+ * 
+ * @author
+ *
+ */
 public class agentHealthCollector {
 	
 	private boolean vfeiMsg = true;
+	List<serviceData> data_List = new ArrayList<serviceData>(); //This will probably not be a good idea for HP integration.
 
 	public agentHealthCollector() throws CSysParseException, IOException {
 		FileInputStream fstream;
@@ -44,9 +50,10 @@ public class agentHealthCollector {
 			}
 			if (vfeiMsg) {
 				data = new serviceData(msg);
-				System.out.println(data);
+				data_List.add(data);
+				//System.out.println(data);
 			} else {
-				System.out.println("None VFEI msg");
+				//System.out.println("None VFEI msg");
 			}
 			
 		}
@@ -54,28 +61,6 @@ public class agentHealthCollector {
 		//Close the input stream
 		br.close();
 	}
-	
-	public static void main(String[] args) {
-    	databaseAgent db = new databaseAgent();
     	
-    	// Example of how to write to database here using our databaseAgent
-    	String table = "user";
-    	String[] values = {"nick"};
-    	db.writeData(table, values);
-    	/*
-        try {
-        	// Possible implementation here can change, right now
-        	// I left it as Mr. Beers wrote it, which is where all
-        	// the functionality is in the instantiation of the 
-        	// agenthealthcollector object... but this should change
-        	// We should extract that out...
-        	agentHealthCollector vParser = new agentHealthCollector();
-		} catch (CSysParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-    }
+       
 }

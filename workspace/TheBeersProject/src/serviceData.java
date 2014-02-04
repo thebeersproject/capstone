@@ -6,19 +6,26 @@ import java.util.List;
 import de.systemagmbh.components.message.vfei.CSysVfeiMessage;
 import de.systemagmbh.interfaces.message.ISysMessageItem;
 
+/**
+ * 
+ * @author
+ *
+ */
 public class serviceData {
 	String agentName = null;
 	String instance = null;
 	List<SrvData> services = new ArrayList<SrvData>();
+	//timestamp
+	//startup time
 	String newLine = System.getProperty("line.separator");
 
 	public serviceData(CSysVfeiMessage msg) {
 		//parse this message
 		int size = msg.size();
-		System.out.println("vfie msg size = " + size);
+		//System.out.println("vfie msg size = " + size);
 		for (int x=0; x<size; x++) {
 			ISysMessageItem i = msg.getItem(x);
-			int type = i.getType();
+			//int type = i.getType();
 			String msgName = (String) i.getKey();
 			if ("APPLICATION".equals(msgName)) {
 				agentName = (String)i.getValue();
@@ -51,7 +58,12 @@ public class serviceData {
 			}
 		}
 	}
+	
+	
 
+	/**
+	 * The string representation of the object.
+	 */
 	public String toString() {
 		String retString = null;
 		retString = "Agent name = " + agentName + " Instance = " + instance + newLine;
@@ -62,11 +74,27 @@ public class serviceData {
 		return retString;
 		
 	}
-	private class SrvData {
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * Stores service information.
+	 * @author
+	 *
+	 */
+	public class SrvData { //Changed to public
 		String serviceName;
 		Long serviceCnt;
 		Long serviceTotalTime;
 		
+		/**
+		 * 
+		 * @param srvData
+		 */
 		public SrvData(CSysVfeiMessage srvData) {
 			// srvData should be a list of 5 items, 
 			ISysMessageItem  serviceCallsMsg = null;
@@ -83,6 +111,9 @@ public class serviceData {
 		}
 		
 		
+		/**
+		 * The string representation of the object.
+		 */
 		public String toString() {
 			String retString = "Service name = " + serviceName 
 					+ " Count = " + Long.toString(serviceCnt) 
