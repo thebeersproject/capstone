@@ -6,8 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+//import java.util.ArrayList;
+//import java.util.List;
+
+
 
 //import de.systemagmbh.common.util.CSysStdMessage;
 import de.systemagmbh.components.message.vfei.CSysVfeiMessage;
@@ -23,7 +25,6 @@ import de.systemagmbh.interfaces.message.CSysParseException;
 public class agentHealthCollector {
 	
 	private boolean vfeiMsg = true;
-	List<serviceData> data_List = new ArrayList<serviceData>(); //This will probably not be a good idea for HP integration.
 
 	public agentHealthCollector() throws CSysParseException, IOException {
 		FileInputStream fstream;
@@ -37,6 +38,7 @@ public class agentHealthCollector {
 		}
 
 		String strLine;
+		String timeStamp = "";
 
 		//Read File Line By Line
 		while ((strLine = br.readLine()) != null)   {
@@ -49,17 +51,40 @@ public class agentHealthCollector {
 				vfeiMsg  = false;
 			}
 			if (vfeiMsg) {
-				data = new serviceData(msg);
-				data_List.add(data);
+				data = new serviceData(msg, timeStamp);
+				data_pack(data);
 				//System.out.println(data);
 			} else {
-				//System.out.println("None VFEI msg");
+				//Assume timeStamp for next message
+				timeStamp = strLine;
 			}
 			
 		}
 
 		//Close the input stream
 		br.close();
+	}
+	
+	/**
+	 * Takes a set of data and calls the appropriate insert/query functions.
+	 * @param db The database agent containing the data from the file.
+	 */
+	private void data_pack(serviceData data){
+		int i = 0;
+		for(serviceData.SrvData sd : data.services){
+			if (i >= 30) //For Testing
+				System.exit(i);
+			i++;
+			
+			//Index table
+			Integer index = databaseAgent.getIndex(data.agentName, data.instance, sd.serviceName);
+			
+			//basedata table
+			String[] bd_values = {index.toString(), sd.serviceCnt.toString(), sd.serviceTotalTime.toString(), data.startupTime, data.timeStamp};
+			databaseAgent.writeData("basedata", bd_values);
+			
+			//6Min table
+		}
 	}
     	
        

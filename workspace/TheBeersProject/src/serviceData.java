@@ -15,11 +15,11 @@ public class serviceData {
 	String agentName = null;
 	String instance = null;
 	List<SrvData> services = new ArrayList<SrvData>();
-	//timestamp
-	//startup time
+	String timeStamp = null;
+	String startupTime = null;
 	String newLine = System.getProperty("line.separator");
 
-	public serviceData(CSysVfeiMessage msg) {
+	public serviceData(CSysVfeiMessage msg, String timeStamp) {
 		//parse this message
 		int size = msg.size();
 		//System.out.println("vfie msg size = " + size);
@@ -56,7 +56,11 @@ public class serviceData {
 
 
 			}
+			if("STARTUP".equals(msgName))
+				startupTime = (String)i.getValue();
 		}
+		this.timeStamp = timeStamp;
+		
 	}
 	
 	
@@ -89,7 +93,7 @@ public class serviceData {
 	public class SrvData { //Changed to public
 		String serviceName;
 		Long serviceCnt;
-		Long serviceTotalTime;
+		Long serviceTotalTime; //Bad name?
 		
 		/**
 		 * 

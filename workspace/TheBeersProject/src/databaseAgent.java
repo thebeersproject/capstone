@@ -9,30 +9,20 @@ import com.mysql.jdbc.exceptions.jdbc4.*;
  *
  */
 public class databaseAgent {
-	private Connection connection = null; // why was this static? Won't work if constructor isn't called first.
+	private static Connection connection = null;
 	// Change these properties to your own database info!
 	
 	//Nick Connection
-	//private String database = "capstone";
-	//private String host = "jdbc:mysql://localhost:8889/" + database;
-	//private String user = "root";
-	//private String pass = "root";
+	//private static final String database = "capstone";
+	//private static final String host = "jdbc:mysql://localhost:8889/" + database;
+	//private static final String user = "root";
+	//private static final String pass = "root";
 	
 	//Ethan Connection
-	private String database = "capstone";
-	private String host = "jdbc:mysql://localhost:3306/" + database;
-	private String user = "capstone";
-	private String pass = "";
-	
-	/**
-	 * Constructor. Calls connectToDatabase().
-	 */
-	public databaseAgent() {
-		connectToDatabase();
-	}
-	
-	
-	
+	private static final String database = "capstone";
+	private static final String host = "jdbc:mysql://localhost:3306/" + database;
+	private static final String user = "capstone";
+	private static final String pass = "";
 	
 	/**
 	 * Builds the insert query string
@@ -41,7 +31,7 @@ public class databaseAgent {
 	 * @param columns The array of columns that are to be inserted.
 	 * @return The query string.
 	 */
-	private String buildInsertQuery(String table, String[] values, String[] columns){
+	private static String buildInsertQuery(String table, String[] values, String[] columns){
 		String vals = stringifyValues(values);
 		String cols = stringifyColumns(columns);
 		
@@ -54,7 +44,7 @@ public class databaseAgent {
 	/**
 	 * Attempts to connect to the database.
 	 */
-	private void connectToDatabase() {
+	public static void connectToDatabase() {
 		//System.out.println("MySQL Database Testing!");
 		 
 		try {
@@ -89,7 +79,7 @@ public class databaseAgent {
 	 * @param table The table whose columns are needed.
 	 * @return The arrray of columns.
 	 */
-	private String[] getColumns(String table){
+	private static String[] getColumns(String table){
 		String[] columns = null;
 		
 		
@@ -100,19 +90,28 @@ public class databaseAgent {
 			columns[2] = "Instance";
 			columns[3] = "Service Name";
 		}
+		else if(table.compareToIgnoreCase("basedata") == 0){
+			columns = new String[5];
+			columns[0] = "Index";
+			columns[1] = "Service Calls";
+			columns[2] = "Service Time";
+			columns[3] = "StartupTime";
+			columns[4] = "Timestamp";
+			
+		}
 		//TODO other tables
 		
 		return columns;		
 	}
 	
 	/**
-	 * Attempts to return the next index to be used. (Possible race condition?)
-	 * @return The next index.
+	 * Gets an index to be used for new data. (Possible race condition?)
+	 * @return The new index.
 	 */
-	public Integer getMaxIndex(){
+	private static Integer getNewIndex(){
 		Integer index = null;
-		
 		Statement statement = null;
+		
 		try {
 			statement = connection.createStatement();
 		} catch (SQLException e) {
@@ -129,11 +128,49 @@ public class databaseAgent {
 				//System.out.println("No results");
 			}
 			else
-				index = rs.getInt(1) + 1;			
+				index = rs.getInt(1) + 1;
+			rs.close(); //Might not have to do.
 		} catch (SQLException e) {
 			System.out.println("Issue reading from database, check console!");
 			e.printStackTrace();
 		}		
+		
+		return index;	
+	}
+	
+	/**
+	 * Gets the index of data. If the data is not in the database it will be added.
+	 * @param agent The name of the agent
+	 * @param instance The instance
+	 * @param service The name of the service
+	 * @return The index that refers to this data.
+	 */
+	public static Integer getIndex(String agent, String instance, String service){
+		Integer index = null;		
+		Statement statement = null;
+		
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			System.out.println("Error allocating statement on network!");
+			e.printStackTrace();
+		}
+		String query = "Select `Index` FROM `capstone`.`index` WHERE `Agent Name` = '" + agent + "' AND `Instance` = '" + instance + "' AND `Service Name` = '" + service + "'";
+		try {
+			ResultSet rs = statement.executeQuery(query);
+			if (rs.first()){
+				index = rs.getInt(1);
+			}
+			else {
+				index = getNewIndex();
+				String[] values = {index.toString(), agent, instance, service};
+				databaseAgent.writeData("index", values);
+			}
+			rs.close(); //Might not have to do.
+		} catch (SQLException e) {
+			System.out.println("Issue reading from database, check console!");
+			e.printStackTrace();
+		}	
 		
 		return index;		
 	}
@@ -143,7 +180,7 @@ public class databaseAgent {
 	 * @param columns The array of columns.
 	 * @return The string of columns.
 	 */
-	private String stringifyColumns(String[] columns){
+	private static String stringifyColumns(String[] columns){
 		String cols = "(";
 		for (int i = 0; i < columns.length; i++)
 		{
@@ -163,7 +200,7 @@ public class databaseAgent {
 	 * @param values The array of values.
 	 * @return The string of values.
 	 */
-	private String stringifyValues(String[] values){
+	private static String stringifyValues(String[] values){
 		String vals = "(";
 		for (int i = 0; i < values.length; i++)
 		{
@@ -184,7 +221,7 @@ public class databaseAgent {
 	 * @param table The table that is to be written to.
 	 * @param values The array values that are to be written (Columns will be determined with call to getColumns()).
 	 */
-	public void writeData(String table, String[] values) {
+	public static void writeData(String table, String[] values) {
 		String[] columns = getColumns(table);
 		if (columns == null){
 			System.out.println("Invalid table");
