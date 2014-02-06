@@ -231,11 +231,6 @@ public class databaseAgent {
 		Statement statement = null;
 		try {
 			statement = connection.createStatement();
-		} 
-		catch (MySQLIntegrityConstraintViolationException e){
-			//Primary key is already in database
-			//TODO
-			
 		}catch (SQLException e) {
 			System.out.println("Error allocating statement on network!");
 			e.printStackTrace();
@@ -245,6 +240,9 @@ public class databaseAgent {
 		
 		try {
 			statement.executeUpdate(query);
+		}catch (MySQLIntegrityConstraintViolationException e){
+			//Primary key is already in database
+			//TODO				
 		} catch (SQLException e) {
 			System.out.println("Issue writing data to database, check console!");
 			e.printStackTrace();
