@@ -72,6 +72,9 @@ public class agentHealthCollector {
 	private void data_pack(serviceData data){
 		int i = 0;
 		for(serviceData.SrvData sd : data.services){
+			if(sd.serviceCnt == 0 && sd.serviceTotalTime == 0)
+				continue;
+			
 			if (i >= 30) //For Testing
 				System.exit(i);
 			i++;
@@ -80,7 +83,7 @@ public class agentHealthCollector {
 			Integer index = databaseAgent.getIndex(data.agentName, data.instance, sd.serviceName);
 			
 			//basedata table
-			String[] bd_values = {index.toString(), sd.serviceCnt.toString(), sd.serviceTotalTime.toString(), data.startupTime, data.timeStamp};
+			String[] bd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), data.timeStamp.minute.toString(), data.timeStamp.second.toString(), sd.serviceCnt.toString(), sd.serviceTotalTime.toString(), data.startupTime};
 			databaseAgent.writeData("basedata", bd_values);
 			
 			//6Min table

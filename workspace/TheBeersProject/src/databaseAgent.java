@@ -91,12 +91,17 @@ public class databaseAgent {
 			columns[3] = "Service Name";
 		}
 		else if(table.compareToIgnoreCase("basedata") == 0){
-			columns = new String[5];
+			columns = new String[10];
 			columns[0] = "Index";
-			columns[1] = "Service Calls";
-			columns[2] = "Service Time";
-			columns[3] = "StartupTime";
-			columns[4] = "Timestamp";
+			columns[1] = "Year";
+			columns[2] = "Month";
+			columns[3] = "Day";
+			columns[4] = "Hour";
+			columns[5] = "Minute";
+			columns[6] = "Second";
+			columns[7] = "Service Calls";
+			columns[8] = "Service Time";
+			columns[9] = "StartupTime";
 			
 		}
 		//TODO other tables
