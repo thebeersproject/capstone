@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `capstone`.`BaseData` (
     `Month` INT NOT NULL,
     `Day` INT NOT NULL,
     `Hour` INT NOT NULL,
-    `Minute` INT NOT NULL,
+    `Interval` INT NOT NULL,
     `Second` INT NOT NULL,
     `StartupTime` VARCHAR(50) NOT NULL,
     `Service Calls` BIGINT NOT NULL,

@@ -42,6 +42,43 @@ public class databaseAgent {
 	}
 	
 	/**
+	 * Attempts to find the previous values for service time and service calls.
+	 * @param index The index of the data
+	 * @return An array containing the previous values or 0 if no values;
+	 */
+	public static Long[] compareToPreviousBase(Integer index){
+		Statement statement = null;
+		Long[] previous = null;
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			System.out.println("Error allocating statement on network!");
+			e.printStackTrace();
+		}
+		
+		String query = "SELECT `Service Calls`, `Service Time` FROM `" + database + "`.`basedata` WHERE `index` = " + index.toString() + " ORDER BY `year`, `month`, `day`, `hour`, `minute`, `second` DESC LIMIT 0 , 1";
+		
+		try {
+			ResultSet rs = statement.executeQuery(query);
+			previous = new Long[2];
+			if (!rs.first()){
+				previous[0] = previous[1] = new Long(0);
+				//System.out.println("No results");
+			}
+			else{
+				previous[0] = rs.getLong(1);
+				previous[1] = rs.getLong(2);				
+			}
+			rs.close(); //Might not have to do.
+		} catch (SQLException e) {
+			System.out.println("Issue reading from database, check console!");
+			e.printStackTrace();
+		}
+		
+		return previous;
+	}
+	
+	/**
 	 * Attempts to connect to the database.
 	 */
 	public static void connectToDatabase() {
@@ -101,8 +138,18 @@ public class databaseAgent {
 			columns[6] = "Second";
 			columns[7] = "Service Calls";
 			columns[8] = "Service Time";
-			columns[9] = "StartupTime";
-			
+			columns[9] = "StartupTime";			
+		}
+		else if(table.compareToIgnoreCase("6mindata") == 0){
+			columns = new String[8];
+			columns[0] = "Index";
+			columns[1] = "Year";
+			columns[2] = "Month";
+			columns[3] = "Day";
+			columns[4] = "Hour";
+			columns[5] = "Interval";
+			columns[6] = "Service Calls";
+			columns[7] = "Service Time";
 		}
 		//TODO other tables
 		
@@ -124,7 +171,7 @@ public class databaseAgent {
 			e.printStackTrace();
 		}
 		
-		String query = "SELECT `Index` FROM `capstone`.`index` WHERE 1 ORDER BY `INDEX` DESC LIMIT 0 , 1";
+		String query = "SELECT `Index` FROM `" + database + "`.`index` WHERE 1 ORDER BY `INDEX` DESC LIMIT 0 , 1";
 		
 		try {
 			ResultSet rs = statement.executeQuery(query);
@@ -160,7 +207,7 @@ public class databaseAgent {
 			System.out.println("Error allocating statement on network!");
 			e.printStackTrace();
 		}
-		String query = "Select `Index` FROM `capstone`.`index` WHERE `Agent Name` = '" + agent + "' AND `Instance` = '" + instance + "' AND `Service Name` = '" + service + "'";
+		String query = "Select `Index` FROM `" + database + "`.`index` WHERE `Agent Name` = '" + agent + "' AND `Instance` = '" + instance + "' AND `Service Name` = '" + service + "'";
 		try {
 			ResultSet rs = statement.executeQuery(query);
 			if (rs.first()){
@@ -247,7 +294,23 @@ public class databaseAgent {
 			statement.executeUpdate(query);
 		}catch (MySQLIntegrityConstraintViolationException e){
 			//Primary key is already in database
-			//TODO				
+			if(table.compareToIgnoreCase("6mindata") == 0){
+				//Need to Update instead of insert
+				try {
+					statement = connection.createStatement();
+				}catch (SQLException f) {
+					System.out.println("Error allocating statement on network!");
+					f.printStackTrace();
+				}
+				query = "UPDATE `" + database + "`.`6mindata` SET `Service Calls` = `Service Calls` + " + values[6] + ", `Service Time` = `Service Time` + " + values[7] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4] + " and `Interval` = " + values[5];
+				//System.out.println(query);
+				try {
+					statement.executeUpdate(query);
+				} catch (SQLException f) {
+					System.out.println("Issue updating database, check console!");
+					f.printStackTrace();
+				}
+			}			
 		} catch (SQLException e) {
 			System.out.println("Issue writing data to database, check console!");
 			e.printStackTrace();

@@ -6,10 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-//import java.util.ArrayList;
-//import java.util.List;
-
-
 
 //import de.systemagmbh.common.util.CSysStdMessage;
 import de.systemagmbh.components.message.vfei.CSysVfeiMessage;
@@ -82,13 +78,47 @@ public class agentHealthCollector {
 			//Index table
 			Integer index = databaseAgent.getIndex(data.agentName, data.instance, sd.serviceName);
 			
-			//basedata table
+			//6Min table
+			Long[] previous = databaseAgent.compareToPreviousBase(index);
+			Long[] diff = {sd.serviceCnt - previous[0], sd.serviceTotalTime - previous[1]};
+			String[] minD_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), determine_interval(data.timeStamp.minute).toString() , diff[0].toString(), diff[1].toString()};
+			databaseAgent.writeData("6mindata", minD_values);
+			
+			//basedata table -- Do after 6Min so that this data wont be used to compare to the new data.
 			String[] bd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), data.timeStamp.minute.toString(), data.timeStamp.second.toString(), sd.serviceCnt.toString(), sd.serviceTotalTime.toString(), data.startupTime};
 			databaseAgent.writeData("basedata", bd_values);
 			
-			//6Min table
 		}
 	}
-    	
+	
+	/**
+	 * Determines the interval the specified minute is in.
+	 * @param minute The minute
+	 * @return The interval
+	 */
+	private Integer determine_interval(Integer minute){
+		if (minute >= 0 && minute <= 5)
+			return 0;
+		else if (minute >= 6 && minute <= 11)
+			return 1;
+		else if (minute >= 12 && minute <= 17)
+			return 2;
+		else if (minute >= 18 && minute <= 23)
+			return 3;
+		else if (minute >= 24 && minute <= 29)
+			return 4;
+		else if (minute >= 30 && minute <= 35)
+			return 5;
+		else if (minute >= 36 && minute <= 41)
+			return 6;
+		else if (minute >= 42 && minute <= 47)
+			return 7;
+		else if (minute >= 48 && minute <= 53)
+			return 8;
+		else if (minute >= 54 && minute <= 59)
+			return 9;
+		else
+			return null;
+	}
        
 }
