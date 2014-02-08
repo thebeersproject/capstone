@@ -7,7 +7,7 @@ import de.systemagmbh.components.message.vfei.CSysVfeiMessage;
 import de.systemagmbh.interfaces.message.ISysMessageItem;
 
 /**
- * 
+ * Stores agent/instance information
  * @author
  *
  */
@@ -61,9 +61,7 @@ public class serviceData {
 		}
 		timeStamp = new TimeStamp(timeStampStr);
 		
-	}
-	
-	
+	}	
 
 	/**
 	 * The string representation of the object.
@@ -77,11 +75,7 @@ public class serviceData {
 		}
 		return retString;
 		
-	}
-	
-	
-	
-	
+	}		
 	
 	
 	
@@ -90,10 +84,10 @@ public class serviceData {
 	 * @author
 	 *
 	 */
-	public class SrvData { //Changed to public
+	public class SrvData {
 		String serviceName;
 		Long serviceCnt;
-		Long serviceTotalTime; //Bad name?
+		Long serviceTotalTime;
 		
 		/**
 		 * 

@@ -1,15 +1,15 @@
 import java.sql.*;
-//import java.util.Arrays;
 
 import com.mysql.jdbc.exceptions.jdbc4.*;
 
 /**
  * Responsible for connecting to and querying the database.
- * @author
+ * @author Nick and Ethan
  *
  */
 public class databaseAgent {
 	private static Connection connection = null;
+	
 	// Change these properties to your own database info!
 	
 	//Nick Connection
@@ -23,6 +23,12 @@ public class databaseAgent {
 	private static final String host = "jdbc:mysql://localhost:3306/" + database;
 	private static final String user = "capstone";
 	private static final String pass = "";
+	
+	//Randy Connection
+	//private static final String database = "";
+	//private static final String host = "";
+	//private static final String user = "";
+	//private static final String pass = "";
 	
 	/**
 	 * Builds the insert query string
@@ -151,7 +157,33 @@ public class databaseAgent {
 			columns[6] = "Service Calls";
 			columns[7] = "Service Time";
 		}
-		//TODO other tables
+		else if(table.compareToIgnoreCase("hourdata") == 0){
+			columns = new String[7];
+			columns[0] = "Index";
+			columns[1] = "Year";
+			columns[2] = "Month";
+			columns[3] = "Day";
+			columns[4] = "Hour";
+			columns[5] = "Service Calls";
+			columns[6] = "Service Time";
+		}
+		else if(table.compareToIgnoreCase("daydata") == 0){
+			columns = new String[6];
+			columns[0] = "Index";
+			columns[1] = "Year";
+			columns[2] = "Month";
+			columns[3] = "Day";
+			columns[4] = "Service Calls";
+			columns[5] = "Service Time";
+		}
+		else if(table.compareToIgnoreCase("totaldata") == 0){
+			columns = new String[3];
+			columns[0] = "Index";
+			columns[1] = "Service Calls";
+			columns[2] = "Service Time";
+		}
+		else
+			System.out.println("unknow table");
 		
 		return columns;		
 	}
@@ -267,6 +299,39 @@ public class databaseAgent {
 		return vals;
 	}	
 	
+	/**
+	 * Updates data in the database
+	 * @param table The table in the database
+	 * @param values The values that need to be inserted and the values for the where clause.
+	 */
+	public static void updateData(String table, String[] values){
+		Statement statement = null;
+		try {
+			statement = connection.createStatement();
+		}catch (SQLException e) {
+			System.out.println("Error allocating statement on network!");
+			e.printStackTrace();
+		}
+		
+		String query = null;
+		if (table.compareToIgnoreCase("6mindata") == 0)
+			query = "UPDATE `" + database + "`.`" + table + "` SET `Service Calls` = `Service Calls` + " + values[6] + ", `Service Time` = `Service Time` + " + values[7] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4] + " and `Interval` = " + values[5];
+		else if (table.compareToIgnoreCase("hourdata") == 0)
+			query = "UPDATE `" + database + "`.`" + table + "` SET `Service Calls` = `Service Calls` + " + values[5] + ", `Service Time` = `Service Time` + " + values[6] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4];
+		else if (table.compareToIgnoreCase("daydata") == 0)
+			query = "UPDATE `" + database + "`.`" + table + "` SET `Service Calls` = `Service Calls` + " + values[4] + ", `Service Time` = `Service Time` + " + values[5] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3];
+		else if (table.compareToIgnoreCase("totaldata") == 0)
+			query = "UPDATE `" + database + "`.`" + table + "` SET `Service Calls` = `Service Calls` + " + values[1] + ", `Service Time` = `Service Time` + " + values[2] + " WHERE `Index` = " + values[0];
+		else
+			System.out.println("Unrecognized table");
+		
+		try {
+			statement.executeUpdate(query);
+		} catch (SQLException e) {
+			System.out.println("Issue updating database, check console!");
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * Writes data to the database
@@ -294,23 +359,9 @@ public class databaseAgent {
 			statement.executeUpdate(query);
 		}catch (MySQLIntegrityConstraintViolationException e){
 			//Primary key is already in database
-			if(table.compareToIgnoreCase("6mindata") == 0){
-				//Need to Update instead of insert
-				try {
-					statement = connection.createStatement();
-				}catch (SQLException f) {
-					System.out.println("Error allocating statement on network!");
-					f.printStackTrace();
-				}
-				query = "UPDATE `" + database + "`.`6mindata` SET `Service Calls` = `Service Calls` + " + values[6] + ", `Service Time` = `Service Time` + " + values[7] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4] + " and `Interval` = " + values[5];
-				//System.out.println(query);
-				try {
-					statement.executeUpdate(query);
-				} catch (SQLException f) {
-					System.out.println("Issue updating database, check console!");
-					f.printStackTrace();
-				}
-			}			
+			if(table.compareToIgnoreCase("index") != 0 && table.compareToIgnoreCase("basedata") != 0){
+				updateData(table, values);
+			}
 		} catch (SQLException e) {
 			System.out.println("Issue writing data to database, check console!");
 			e.printStackTrace();

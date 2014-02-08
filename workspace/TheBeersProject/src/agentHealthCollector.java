@@ -22,6 +22,11 @@ public class agentHealthCollector {
 	
 	private boolean vfeiMsg = true;
 
+	/**
+	 * Constructor for agent health collector. Reads data file.
+	 * @throws CSysParseException
+	 * @throws IOException
+	 */
 	public agentHealthCollector() throws CSysParseException, IOException {
 		FileInputStream fstream;
 		BufferedReader br = null;
@@ -71,8 +76,11 @@ public class agentHealthCollector {
 			if(sd.serviceCnt == 0 && sd.serviceTotalTime == 0)
 				continue;
 			
-			if (i >= 30) //For Testing
+			 //For Testing
+			if (i >= 30){
+				System.out.println("Terminated early for testing purposes. See line 75(ish) in agentHealthCollector to change.");
 				System.exit(i);
+			}
 			i++;
 			
 			//Index table
@@ -88,6 +96,17 @@ public class agentHealthCollector {
 			String[] bd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), data.timeStamp.minute.toString(), data.timeStamp.second.toString(), sd.serviceCnt.toString(), sd.serviceTotalTime.toString(), data.startupTime};
 			databaseAgent.writeData("basedata", bd_values);
 			
+			//hourdata
+			String[] hd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), diff[0].toString(), diff[1].toString()};
+			databaseAgent.writeData("hourdata", hd_values);
+			
+			//daydata
+			String[] dd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), diff[0].toString(), diff[1].toString()};
+			databaseAgent.writeData("daydata", dd_values);
+			
+			//totaldata
+			String[] td_values = {index.toString(), diff[0].toString(), diff[1].toString()};
+			databaseAgent.writeData("totaldata", td_values);
 		}
 	}
 	
