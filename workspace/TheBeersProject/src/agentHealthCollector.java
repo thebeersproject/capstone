@@ -1,6 +1,5 @@
 //package com.hp.iwac.exp;
 
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,47 +22,21 @@ public class agentHealthCollector {
 	private boolean vfeiMsg = true;
 
 	/**
-	 * Constructor for agent health collector. Reads data file.
+	 * Constructor for agent health collector. Calls function to read file.
+	 * @param file The name of the file to be used.
 	 * @throws CSysParseException
 	 * @throws IOException
 	 */
-	public agentHealthCollector() throws CSysParseException, IOException {
-		FileInputStream fstream;
-		BufferedReader br = null;
-		try {
-			fstream = new FileInputStream("AGENT_STATUS_13_11_14.txt");
-			br = new BufferedReader(new InputStreamReader(fstream));
-		} catch (FileNotFoundException e) {
+	public agentHealthCollector(String file) {
+		try{
+			readData(file);
+		} catch (CSysParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		String strLine;
-		String timeStamp = "";
-
-		//Read File Line By Line
-		while ((strLine = br.readLine()) != null)   {
-			CSysVfeiMessage msg = new CSysVfeiMessage();
-			serviceData data = null;
-			try {
-				vfeiMsg  = true;
-				msg.parse(strLine);
-			} catch (CSysParseException e) {
-				vfeiMsg  = false;
-			}
-			if (vfeiMsg) {
-				data = new serviceData(msg, timeStamp);
-				data_pack(data);
-				//System.out.println(data);
-			} else {
-				//Assume timeStamp for next message
-				timeStamp = strLine;
-			}
-			
-		}
-
-		//Close the input stream
-		br.close();
 	}
 	
 	/**
@@ -78,10 +51,10 @@ public class agentHealthCollector {
 			
 			 //For Testing
 			if (i >= 30){
-				System.out.println("Terminated early for testing purposes. See line 75(ish) in agentHealthCollector to change.");
+				System.out.println("Terminated early for testing purposes. See line 53(ish) in agentHealthCollector to change.");
 				System.exit(i);
 			}
-			i++;
+			//i++;
 			
 			//Index table
 			Integer index = databaseAgent.getIndex(data.agentName, data.instance, sd.serviceName);
@@ -138,6 +111,49 @@ public class agentHealthCollector {
 			return 9;
 		else
 			return null;
+	}
+	
+	/**
+	 * Reads the service data from a text file.
+	 * @throws CSysParseException
+	 * @throws IOException
+	 */
+	private void readData(String file) throws CSysParseException, IOException{
+		FileInputStream fstream;
+		BufferedReader br = null;
+		try {
+			fstream = new FileInputStream(file);
+			br = new BufferedReader(new InputStreamReader(fstream));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String strLine;
+		String timeStamp = "";
+
+		//Read File Line By Line
+		while ((strLine = br.readLine()) != null)   {
+			CSysVfeiMessage msg = new CSysVfeiMessage();
+			serviceData data = null;
+			try {
+				vfeiMsg  = true;
+				msg.parse(strLine);
+			} catch (CSysParseException e) {
+				vfeiMsg  = false;
+			}
+			if (vfeiMsg) {
+				data = new serviceData(msg, timeStamp);
+				data_pack(data);
+			} else {
+				//Assume timeStamp for next message
+				timeStamp = strLine;
+			}
+			
+		}
+
+		//Close the input stream
+		br.close();
 	}
        
 }

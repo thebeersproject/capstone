@@ -22,10 +22,8 @@ public class serviceData {
 	public serviceData(CSysVfeiMessage msg, String timeStampStr) {
 		//parse this message
 		int size = msg.size();
-		//System.out.println("vfie msg size = " + size);
 		for (int x=0; x<size; x++) {
 			ISysMessageItem i = msg.getItem(x);
-			//int type = i.getType();
 			String msgName = (String) i.getKey();
 			if ("APPLICATION".equals(msgName)) {
 				agentName = (String)i.getValue();
@@ -96,9 +94,7 @@ public class serviceData {
 		public SrvData(CSysVfeiMessage srvData) {
 			// srvData should be a list of 5 items, 
 			ISysMessageItem  serviceCallsMsg = null;
-			// System.out.println("srvData is a list message = " + srvData.toString());
 			CSysVfeiMessage info = srvData;
-			// System.out.println("info = " + info.toString());
 			ISysMessageItem serviceMsg = info.getItem("SERVICE_NAME");
 			serviceName = serviceMsg.getValue().toString();
 			
@@ -139,8 +135,6 @@ public class serviceData {
 		
 		public TimeStamp(String timeStampStr){
 			timeStamp = timeStampStr;
-			
-			//System.out.println(timeStamp);
 			
 			//Year
 			char[] tempArr = new char[4];

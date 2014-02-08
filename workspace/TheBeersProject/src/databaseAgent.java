@@ -42,7 +42,6 @@ public class databaseAgent {
 		String cols = stringifyColumns(columns);
 		
 		String query = "INSERT INTO " + database + "." + table + " " + cols + " VALUES " + vals;
-		//System.out.println("New Query: " + query);
 		
 		return query;
 	}
@@ -69,7 +68,6 @@ public class databaseAgent {
 			previous = new Long[2];
 			if (!rs.first()){
 				previous[0] = previous[1] = new Long(0);
-				//System.out.println("No results");
 			}
 			else{
 				previous[0] = rs.getLong(1);
@@ -88,8 +86,6 @@ public class databaseAgent {
 	 * Attempts to connect to the database.
 	 */
 	public static void connectToDatabase() {
-		//System.out.println("MySQL Database Testing!");
-		 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -123,8 +119,7 @@ public class databaseAgent {
 	 * @return The arrray of columns.
 	 */
 	private static String[] getColumns(String table){
-		String[] columns = null;
-		
+		String[] columns = null;		
 		
 		if(table.compareToIgnoreCase("index") == 0){
 			columns = new String[4];
@@ -209,7 +204,6 @@ public class databaseAgent {
 			ResultSet rs = statement.executeQuery(query);
 			if (!rs.first()){
 				index = 0;
-				//System.out.println("No results");
 			}
 			else
 				index = rs.getInt(1) + 1;
@@ -274,7 +268,6 @@ public class databaseAgent {
 			else
 				cols += ")";
 		}
-		//System.out.println("QUERY: " + cols);
 		
 		return cols;
 	}
@@ -294,7 +287,6 @@ public class databaseAgent {
 			else
 				vals += ")";
 		}
-		//System.out.println("QUERY: " + vals);
 		
 		return vals;
 	}	
@@ -368,7 +360,4 @@ public class databaseAgent {
 		}
 	}
 	
-	/*public static void main(String[] args) {
-		databaseAgent DB = new databaseAgent();
-	}*/
 }
