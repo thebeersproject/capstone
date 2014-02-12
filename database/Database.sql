@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS `capstone`.`BaseData` (
     `Month` INT NOT NULL,
     `Day` INT NOT NULL,
     `Hour` INT NOT NULL,
-    `Interval` INT NOT NULL,
+    `Minute` INT NOT NULL,
     `Second` INT NOT NULL,
     `StartupTime` VARCHAR(50) NOT NULL,
     `Service Calls` BIGINT NOT NULL,
@@ -30,10 +30,10 @@ CREATE TABLE IF NOT EXISTS `capstone`.`6MinData` (
     `Month` INT NOT NULL,
     `Day` INT NOT NULL,
     `Hour` INT NOT NULL,
-    `Minute` INT NOT NULL,
+    `Interval` INT NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
-    PRIMARY KEY (`Index` , `Year` , `Month` , `Day` , `Hour` , `Minute`),
+    PRIMARY KEY (`Index` , `Year` , `Month` , `Day` , `Hour` , `Interval`),
     CONSTRAINT `6MinIndex` FOREIGN KEY (`Index`)
         REFERENCES `capstone`.`Index` (`Index`)
         ON DELETE RESTRICT ON UPDATE CASCADE
