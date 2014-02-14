@@ -30,6 +30,12 @@ public class databaseAgent {
 	//private static final String user = "";
 	//private static final String pass = "";
 	
+	//Capstone Connection
+	//private static final String database = "cs462-team18";
+	//private static final String host = "jdbc:mysql://mysql.cs.orst.edu/" + database;
+	//private static final String user = "cs462-team18";
+	//private static final String pass = "yw54jDDMnPMaxEqt";
+	
 	/**
 	 * Builds the insert query string
 	 * @param table The table the data is to be inserted to.
@@ -41,7 +47,7 @@ public class databaseAgent {
 		String vals = stringifyValues(values);
 		String cols = stringifyColumns(columns);
 		
-		String query = "INSERT INTO " + database + "." + table + " " + cols + " VALUES " + vals;
+		String query = "INSERT INTO `" + table + "` " + cols + " VALUES " + vals;
 		
 		return query;
 	}
@@ -51,7 +57,7 @@ public class databaseAgent {
 	 * @param index The index of the data
 	 * @return An array containing the previous values or 0 if no values;
 	 */
-	public static Long[] compareToPreviousBase(Integer index){
+	public static Long[] compareToPreviousBase(Integer index, String StartUp){
 		Statement statement = null;
 		Long[] previous = null;
 		try {
@@ -61,7 +67,7 @@ public class databaseAgent {
 			e.printStackTrace();
 		}
 		
-		String query = "SELECT `Service Calls`, `Service Time` FROM `" + database + "`.`basedata` WHERE `index` = " + index.toString() + " ORDER BY `year`, `month`, `day`, `hour`, `minute`, `second` DESC LIMIT 0 , 1";
+		String query = "SELECT `Service Calls`, `Service Time` FROM `basedata` WHERE `index` = " + index.toString() + " AND `StartupTime` = \"" + StartUp + "\" ORDER BY `year`, `month`, `day`, `hour`, `minute`, `second` DESC LIMIT 0 , 1";
 		
 		try {
 			ResultSet rs = statement.executeQuery(query);
@@ -198,7 +204,7 @@ public class databaseAgent {
 			e.printStackTrace();
 		}
 		
-		String query = "SELECT `Index` FROM `" + database + "`.`index` WHERE 1 ORDER BY `INDEX` DESC LIMIT 0 , 1";
+		String query = "SELECT `Index` FROM `index` WHERE 1 ORDER BY `INDEX` DESC LIMIT 0 , 1";
 		
 		try {
 			ResultSet rs = statement.executeQuery(query);
@@ -233,7 +239,7 @@ public class databaseAgent {
 			System.out.println("Error allocating statement on network!");
 			e.printStackTrace();
 		}
-		String query = "Select `Index` FROM `" + database + "`.`index` WHERE `Agent Name` = '" + agent + "' AND `Instance` = '" + instance + "' AND `Service Name` = '" + service + "'";
+		String query = "Select `Index` FROM `index` WHERE `Agent Name` = '" + agent + "' AND `Instance` = '" + instance + "' AND `Service Name` = '" + service + "'";
 		try {
 			ResultSet rs = statement.executeQuery(query);
 			if (rs.first()){
@@ -307,13 +313,13 @@ public class databaseAgent {
 		
 		String query = null;
 		if (table.compareToIgnoreCase("6mindata") == 0)
-			query = "UPDATE `" + database + "`.`" + table + "` SET `Service Calls` = `Service Calls` + " + values[6] + ", `Service Time` = `Service Time` + " + values[7] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4] + " and `Interval` = " + values[5];
+			query = "UPDATE `" + table + "` SET `Service Calls` = `Service Calls` + " + values[6] + ", `Service Time` = `Service Time` + " + values[7] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4] + " and `Interval` = " + values[5];
 		else if (table.compareToIgnoreCase("hourdata") == 0)
-			query = "UPDATE `" + database + "`.`" + table + "` SET `Service Calls` = `Service Calls` + " + values[5] + ", `Service Time` = `Service Time` + " + values[6] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4];
+			query = "UPDATE `" + table + "` SET `Service Calls` = `Service Calls` + " + values[5] + ", `Service Time` = `Service Time` + " + values[6] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4];
 		else if (table.compareToIgnoreCase("daydata") == 0)
-			query = "UPDATE `" + database + "`.`" + table + "` SET `Service Calls` = `Service Calls` + " + values[4] + ", `Service Time` = `Service Time` + " + values[5] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3];
+			query = "UPDATE `" + table + "` SET `Service Calls` = `Service Calls` + " + values[4] + ", `Service Time` = `Service Time` + " + values[5] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3];
 		else if (table.compareToIgnoreCase("totaldata") == 0)
-			query = "UPDATE `" + database + "`.`" + table + "` SET `Service Calls` = `Service Calls` + " + values[1] + ", `Service Time` = `Service Time` + " + values[2] + " WHERE `Index` = " + values[0];
+			query = "UPDATE `" + table + "` SET `Service Calls` = `Service Calls` + " + values[1] + ", `Service Time` = `Service Time` + " + values[2] + " WHERE `Index` = " + values[0];
 		else
 			System.out.println("Unrecognized table");
 		

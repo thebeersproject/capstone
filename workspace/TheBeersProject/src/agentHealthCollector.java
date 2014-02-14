@@ -60,7 +60,7 @@ public class agentHealthCollector {
 			Integer index = databaseAgent.getIndex(data.agentName, data.instance, sd.serviceName);
 			
 			//6Min table
-			Long[] previous = databaseAgent.compareToPreviousBase(index);
+			Long[] previous = databaseAgent.compareToPreviousBase(index, data.startupTime);
 			Long[] diff = {sd.serviceCnt - previous[0], sd.serviceTotalTime - previous[1]};
 			String[] minD_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), determine_interval(data.timeStamp.minute).toString() , diff[0].toString(), diff[1].toString()};
 			databaseAgent.writeData("6mindata", minD_values);
