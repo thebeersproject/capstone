@@ -44,17 +44,17 @@ public class agentHealthCollector {
 	 * @param db The database agent containing the data from the file.
 	 */
 	private void data_pack(serviceData data){
-		int i = 0;
+		//int i = 0;
 		for(serviceData.SrvData sd : data.services){
 			if(sd.serviceCnt == 0 && sd.serviceTotalTime == 0)
 				continue;
 			
 			 //For Testing
-			if (i >= 30){
+			/*if (i >= 30){
 				System.out.println("Terminated early for testing purposes. See line 53(ish) in agentHealthCollector to change.");
 				System.exit(i);
 			}
-			//i++;
+			i++;*/
 			
 			//Index table
 			Integer index = databaseAgent.getIndex(data.agentName, data.instance, sd.serviceName);
@@ -63,23 +63,23 @@ public class agentHealthCollector {
 			Long[] previous = databaseAgent.compareToPreviousBase(index, data.startupTime);
 			Long[] diff = {sd.serviceCnt - previous[0], sd.serviceTotalTime - previous[1]};
 			String[] minD_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), determine_interval(data.timeStamp.minute).toString() , diff[0].toString(), diff[1].toString()};
-			databaseAgent.writeData("6mindata", minD_values);
+			databaseAgent.writeData(databaseAgent.MINUTE_TABLE, minD_values);
 			
 			//basedata table -- Do after 6Min so that this data wont be used to compare to the new data.
 			String[] bd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), data.timeStamp.minute.toString(), data.timeStamp.second.toString(), sd.serviceCnt.toString(), sd.serviceTotalTime.toString(), data.startupTime};
-			databaseAgent.writeData("basedata", bd_values);
+			databaseAgent.writeData(databaseAgent.RAW_TABLE, bd_values);
 			
 			//hourdata
 			String[] hd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), diff[0].toString(), diff[1].toString()};
-			databaseAgent.writeData("hourdata", hd_values);
+			databaseAgent.writeData(databaseAgent.HOUR_TABLE, hd_values);
 			
 			//daydata
 			String[] dd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), diff[0].toString(), diff[1].toString()};
-			databaseAgent.writeData("daydata", dd_values);
+			databaseAgent.writeData(databaseAgent.DAY_TABLE, dd_values);
 			
 			//totaldata
 			String[] td_values = {index.toString(), diff[0].toString(), diff[1].toString()};
-			databaseAgent.writeData("totaldata", td_values);
+			databaseAgent.writeData(databaseAgent.TOTAL_TABLE, td_values);
 		}
 	}
 	

@@ -13,28 +13,56 @@ public class databaseAgent {
 	// Change these properties to your own database info!
 	
 	//Nick Connection
-	//private static final String database = "capstone";
-	//private static final String host = "jdbc:mysql://localhost:8889/" + database;
-	//private static final String user = "root";
-	//private static final String pass = "root";
+	//private static final String DATABASE = "capstone";
+	//private static final String HOST = "jdbc:mysql://localhost:8889/" + DATABASE;
+	//private static final String USER = "root";
+	//private static final String PASS = "root";
 	
 	//Ethan Connection
-	private static final String database = "capstone";
-	private static final String host = "jdbc:mysql://localhost:3306/" + database;
-	private static final String user = "capstone";
-	private static final String pass = "";
+	private static final String DATABASE = "capstone";
+	private static final String HOST = "jdbc:mysql://localhost:3306/" + DATABASE;
+	private static final String USER = "capstone";
+	private static final String PASS = "";
 	
 	//Randy Connection
-	//private static final String database = "";
-	//private static final String host = "";
-	//private static final String user = "";
-	//private static final String pass = "";
+	//private static final String DATABASE = "";
+	//private static final String HOST = "";
+	//private static final String USER = "";
+	//private static final String PASS = "";
 	
 	//Capstone Connection
-	//private static final String database = "cs462-team18";
-	//private static final String host = "jdbc:mysql://mysql.cs.orst.edu/" + database;
-	//private static final String user = "cs462-team18";
-	//private static final String pass = "yw54jDDMnPMaxEqt";
+	//private static final String DATABASE = "cs462-team18";
+	//private static final String HOST = "jdbc:mysql://mysql.cs.orst.edu/" + DATABASE;
+	//private static final String USER = "cs462-team18";
+	//private static final String PASS = "yw54jDDMnPMaxEqt";
+	
+	//Tables
+	public static final String INDEX_TABLE = "indextable";
+	public static final String RAW_TABLE = "basedata";
+	public static final String MINUTE_TABLE = "6mindata";
+	public static final String HOUR_TABLE = "hourdata";
+	public static final String DAY_TABLE = "daydata";
+	public static final String TOTAL_TABLE = "totaldata";
+	
+	//Columns
+	//Common to multiple tables
+	private static final String INDEX_COL = "IndexColumn";
+	private static final String YEAR = "Year";
+	private static final String MONTH = "Month";
+	private static final String DAY = "Day";
+	private static final String HOUR = "Hour";
+	private static final String SERVICE_CALLS = "Service Calls";
+	private static final String SERVICE_TIME = "Service Time";
+	//INDEX_TABLE
+	private static final String AGNT_NAME = "Agent Name";
+	private static final String INST = "Instance";
+	private static final String SRVC_NAME = "Service Name";
+	//RAW_TABLE
+	private static final String MINUTE = "Minute";
+	private static final String SECOND = "Second";
+	private static final String STARTUP_TIME = "StartupTime";
+	//MIN_TABLE
+	private static final String INTERVAL = "Interval";
 	
 	/**
 	 * Builds the insert query string
@@ -67,7 +95,7 @@ public class databaseAgent {
 			e.printStackTrace();
 		}
 		
-		String query = "SELECT `Service Calls`, `Service Time` FROM `basedata` WHERE `index` = " + index.toString() + " AND `StartupTime` = \"" + StartUp + "\" ORDER BY `year`, `month`, `day`, `hour`, `minute`, `second` DESC LIMIT 0 , 1";
+		String query = "SELECT `" + SERVICE_CALLS + "`, `" + SERVICE_TIME + "` FROM `" + RAW_TABLE + "` WHERE `" + INDEX_COL + "` = " + index.toString() + " AND `" + STARTUP_TIME + "` = \"" + StartUp + "\" ORDER BY `" + YEAR + "`, `" + MONTH + "`, `" + DAY + "`, `" + HOUR + "`, `" + MINUTE + "`, `" + SECOND + "` DESC LIMIT 0 , 1";
 		
 		try {
 			ResultSet rs = statement.executeQuery(query);
@@ -104,7 +132,7 @@ public class databaseAgent {
 	 
 		try {
 			connection = DriverManager
-			.getConnection(host, user, pass);
+			.getConnection(HOST, USER, PASS);
 	 
 		} catch (SQLException e) {
 			System.out.println("Connection Failed! Check console");
@@ -126,62 +154,62 @@ public class databaseAgent {
 	 */
 	private static String[] getColumns(String table){
 		String[] columns = null;		
-		
-		if(table.compareToIgnoreCase("index") == 0){
+
+		if(table.compareToIgnoreCase(INDEX_TABLE) == 0){
 			columns = new String[4];
-			columns[0] = "Index";
-			columns[1] = "Agent Name";
-			columns[2] = "Instance";
-			columns[3] = "Service Name";
+			columns[0] = INDEX_COL;
+			columns[1] = AGNT_NAME;
+			columns[2] = INST;
+			columns[3] = SRVC_NAME;
 		}
-		else if(table.compareToIgnoreCase("basedata") == 0){
+		else if(table.compareToIgnoreCase(RAW_TABLE) == 0){
 			columns = new String[10];
-			columns[0] = "Index";
-			columns[1] = "Year";
-			columns[2] = "Month";
-			columns[3] = "Day";
-			columns[4] = "Hour";
-			columns[5] = "Minute";
-			columns[6] = "Second";
-			columns[7] = "Service Calls";
-			columns[8] = "Service Time";
-			columns[9] = "StartupTime";			
+			columns[0] = INDEX_COL;
+			columns[1] = YEAR;
+			columns[2] = MONTH;
+			columns[3] = DAY;
+			columns[4] = HOUR;
+			columns[5] = MINUTE;
+			columns[6] = SECOND;
+			columns[7] = SERVICE_CALLS;
+			columns[8] = SERVICE_TIME;
+			columns[9] = STARTUP_TIME;			
 		}
-		else if(table.compareToIgnoreCase("6mindata") == 0){
+		else if(table.compareToIgnoreCase(MINUTE_TABLE) == 0){
 			columns = new String[8];
-			columns[0] = "Index";
-			columns[1] = "Year";
-			columns[2] = "Month";
-			columns[3] = "Day";
-			columns[4] = "Hour";
-			columns[5] = "Interval";
-			columns[6] = "Service Calls";
-			columns[7] = "Service Time";
+			columns[0] = INDEX_COL;
+			columns[1] = YEAR;
+			columns[2] = MONTH;
+			columns[3] = DAY;
+			columns[4] = HOUR;
+			columns[5] = INTERVAL;
+			columns[6] = SERVICE_CALLS;
+			columns[7] = SERVICE_TIME;
 		}
-		else if(table.compareToIgnoreCase("hourdata") == 0){
+		else if(table.compareToIgnoreCase(HOUR_TABLE) == 0){
 			columns = new String[7];
-			columns[0] = "Index";
-			columns[1] = "Year";
-			columns[2] = "Month";
-			columns[3] = "Day";
-			columns[4] = "Hour";
-			columns[5] = "Service Calls";
-			columns[6] = "Service Time";
+			columns[0] = INDEX_COL;
+			columns[1] = YEAR;
+			columns[2] = MONTH;
+			columns[3] = DAY;
+			columns[4] = HOUR;
+			columns[5] = SERVICE_CALLS;
+			columns[6] = SERVICE_TIME;
 		}
-		else if(table.compareToIgnoreCase("daydata") == 0){
+		else if(table.compareToIgnoreCase(DAY_TABLE) == 0){
 			columns = new String[6];
-			columns[0] = "Index";
-			columns[1] = "Year";
-			columns[2] = "Month";
-			columns[3] = "Day";
-			columns[4] = "Service Calls";
-			columns[5] = "Service Time";
+			columns[0] = INDEX_COL;
+			columns[1] = YEAR;
+			columns[2] = MONTH;
+			columns[3] = DAY;
+			columns[4] = SERVICE_CALLS;
+			columns[5] = SERVICE_TIME;
 		}
-		else if(table.compareToIgnoreCase("totaldata") == 0){
+		else if(table.compareToIgnoreCase(TOTAL_TABLE) == 0){
 			columns = new String[3];
-			columns[0] = "Index";
-			columns[1] = "Service Calls";
-			columns[2] = "Service Time";
+			columns[0] = INDEX_COL;
+			columns[1] = SERVICE_CALLS;
+			columns[2] = SERVICE_TIME;
 		}
 		else
 			System.out.println("unknow table");
@@ -204,7 +232,7 @@ public class databaseAgent {
 			e.printStackTrace();
 		}
 		
-		String query = "SELECT `Index` FROM `index` WHERE 1 ORDER BY `INDEX` DESC LIMIT 0 , 1";
+		String query = "SELECT `" + INDEX_COL + "` FROM `" + INDEX_TABLE + "` WHERE 1 ORDER BY `" + INDEX_COL + "` DESC LIMIT 0 , 1";
 		
 		try {
 			ResultSet rs = statement.executeQuery(query);
@@ -239,7 +267,7 @@ public class databaseAgent {
 			System.out.println("Error allocating statement on network!");
 			e.printStackTrace();
 		}
-		String query = "Select `Index` FROM `index` WHERE `Agent Name` = '" + agent + "' AND `Instance` = '" + instance + "' AND `Service Name` = '" + service + "'";
+		String query = "Select `" + INDEX_COL + "` FROM `" + INDEX_TABLE + "` WHERE `" + AGNT_NAME + "` = '" + agent + "' AND `" + INST + "` = '" + instance + "' AND `" + SRVC_NAME + "` = '" + service + "'";
 		try {
 			ResultSet rs = statement.executeQuery(query);
 			if (rs.first()){
@@ -248,7 +276,7 @@ public class databaseAgent {
 			else {
 				index = getNewIndex();
 				String[] values = {index.toString(), agent, instance, service};
-				databaseAgent.writeData("index", values);
+				databaseAgent.writeData(INDEX_TABLE, values);
 			}
 			rs.close(); //Might not have to do.
 		} catch (SQLException e) {
@@ -313,13 +341,13 @@ public class databaseAgent {
 		
 		String query = null;
 		if (table.compareToIgnoreCase("6mindata") == 0)
-			query = "UPDATE `" + table + "` SET `Service Calls` = `Service Calls` + " + values[6] + ", `Service Time` = `Service Time` + " + values[7] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4] + " and `Interval` = " + values[5];
+			query = "UPDATE `" + table + "` SET `" + SERVICE_CALLS + "` = `" + SERVICE_CALLS + "` + " + values[6] + ", `" + SERVICE_TIME + "` = `" + SERVICE_TIME + "` + " + values[7] + " WHERE `" + INDEX_COL + "` = " + values[0] + " and `" + YEAR + "` = " + values[1] + " and `" + MONTH + "` = " + values[2] + " and `" + DAY + "` = " + values[3] + " and `" + HOUR + "` = " + values[4] + " and `" + INTERVAL + "` = " + values[5];
 		else if (table.compareToIgnoreCase("hourdata") == 0)
-			query = "UPDATE `" + table + "` SET `Service Calls` = `Service Calls` + " + values[5] + ", `Service Time` = `Service Time` + " + values[6] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3] + " and `Hour` = " + values[4];
+			query = "UPDATE `" + table + "` SET `" + SERVICE_CALLS + "` = `" + SERVICE_CALLS + "` + " + values[5] + ", `" + SERVICE_TIME + "` = `" + SERVICE_TIME + "` + " + values[6] + " WHERE `" + INDEX_COL + "` = " + values[0] + " and `" + YEAR + "` = " + values[1] + " and `" + MONTH + "` = " + values[2] + " and `" + DAY + "` = " + values[3] + " and `" + HOUR + "` = " + values[4];
 		else if (table.compareToIgnoreCase("daydata") == 0)
-			query = "UPDATE `" + table + "` SET `Service Calls` = `Service Calls` + " + values[4] + ", `Service Time` = `Service Time` + " + values[5] + " WHERE `Index` = " + values[0] + " and `Year` = " + values[1] + " and `Month` = " + values[2] + " and `Day` = " + values[3];
+			query = "UPDATE `" + table + "` SET `" + SERVICE_CALLS + "` = `" + SERVICE_CALLS + "` + " + values[4] + ", `" + SERVICE_TIME + "` = `" + SERVICE_TIME + "` + " + values[5] + " WHERE `" + INDEX_COL + "` = " + values[0] + " and `" + YEAR + "` = " + values[1] + " and `" + MONTH + "` = " + values[2] + " and `" + DAY + "` = " + values[3];
 		else if (table.compareToIgnoreCase("totaldata") == 0)
-			query = "UPDATE `" + table + "` SET `Service Calls` = `Service Calls` + " + values[1] + ", `Service Time` = `Service Time` + " + values[2] + " WHERE `Index` = " + values[0];
+			query = "UPDATE `" + table + "` SET `" + SERVICE_CALLS + "` = `" + SERVICE_CALLS + "` + " + values[1] + ", `" + SERVICE_TIME + "` = `" + SERVICE_TIME + "` + " + values[2] + " WHERE `" + INDEX_COL + "` = " + values[0];
 		else
 			System.out.println("Unrecognized table");
 		
@@ -357,7 +385,7 @@ public class databaseAgent {
 			statement.executeUpdate(query);
 		}catch (MySQLIntegrityConstraintViolationException e){
 			//Primary key is already in database
-			if(table.compareToIgnoreCase("index") != 0 && table.compareToIgnoreCase("basedata") != 0){
+			if(table.compareToIgnoreCase(INDEX_TABLE) != 0 && table.compareToIgnoreCase(RAW_TABLE) != 0){
 				updateData(table, values);
 			}
 		} catch (SQLException e) {

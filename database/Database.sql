@@ -1,14 +1,14 @@
-CREATE TABLE IF NOT EXISTS `capstone`.`index` (
+CREATE TABLE IF NOT EXISTS `capstone`.`indextable` (
     `Agent Name` VARCHAR(50) NOT NULL,
     `Instance` VARCHAR(50) NOT NULL,
     `Service Name` VARCHAR(50) NOT NULL,
-    `Index` BIGINT NOT NULL,
+    `IndexColumn` BIGINT NOT NULL,
     PRIMARY KEY (`Agent Name` , `Instance` , `Service Name`),
-    UNIQUE INDEX `Index_UNIQUE` (`Index` ASC)
+    UNIQUE INDEX `Index_UNIQUE` (`IndexColumn` ASC)
 )  ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `capstone`.`basedata` (
-    `Index` BIGINT NOT NULL,
+    `IndexColumn` BIGINT NOT NULL,
     `Year` INT NOT NULL,
     `Month` INT NOT NULL,
     `Day` INT NOT NULL,
@@ -18,14 +18,14 @@ CREATE TABLE IF NOT EXISTS `capstone`.`basedata` (
     `StartupTime` VARCHAR(50) NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
-    PRIMARY KEY (`Index` , `Year` , `Month` , `Day` , `Hour` , `Minute` , `Second`),
-    CONSTRAINT `BDIndex` FOREIGN KEY (`Index`)
-        REFERENCES `capstone`.`index` (`Index`)
+    PRIMARY KEY (`IndexColumn` , `Year` , `Month` , `Day` , `Hour` , `Minute` , `Second`),
+    CONSTRAINT `BDIndex` FOREIGN KEY (`IndexColumn`)
+        REFERENCES `capstone`.`indextable` (`IndexColumn`)
         ON DELETE RESTRICT ON UPDATE CASCADE
 )  ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `capstone`.`6mindata` (
-    `Index` BIGINT NOT NULL,
+    `IndexColumn` BIGINT NOT NULL,
     `Year` INT NOT NULL,
     `Month` INT NOT NULL,
     `Day` INT NOT NULL,
@@ -33,45 +33,45 @@ CREATE TABLE IF NOT EXISTS `capstone`.`6mindata` (
     `Interval` INT NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
-    PRIMARY KEY (`Index` , `Year` , `Month` , `Day` , `Hour` , `Interval`),
-    CONSTRAINT `6MinIndex` FOREIGN KEY (`Index`)
-        REFERENCES `capstone`.`index` (`Index`)
+    PRIMARY KEY (`IndexColumn` , `Year` , `Month` , `Day` , `Hour` , `Interval`),
+    CONSTRAINT `6MinIndex` FOREIGN KEY (`IndexColumn`)
+        REFERENCES `capstone`.`indextable` (`IndexColumn`)
         ON DELETE RESTRICT ON UPDATE CASCADE
 )  ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `capstone`.`hourdata` (
-    `Index` BIGINT NOT NULL,
+    `IndexColumn` BIGINT NOT NULL,
     `Year` INT NOT NULL,
     `Month` INT NOT NULL,
     `Day` INT NOT NULL,
     `Hour` INT NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
-    PRIMARY KEY (`Index` , `Year` , `Month` , `Day` , `Hour`),
-    CONSTRAINT `HourIndex` FOREIGN KEY (`Index`)
-        REFERENCES `capstone`.`index` (`Index`)
+    PRIMARY KEY (`IndexColumn` , `Year` , `Month` , `Day` , `Hour`),
+    CONSTRAINT `HourIndex` FOREIGN KEY (`IndexColumn`)
+        REFERENCES `capstone`.`indextable` (`IndexColumn`)
         ON DELETE RESTRICT ON UPDATE CASCADE
 )  ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `capstone`.`daydata` (
-    `Index` BIGINT NOT NULL,
+    `IndexColumn` BIGINT NOT NULL,
     `Year` INT NOT NULL,
     `Month` INT NOT NULL,
     `Day` INT NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
-    PRIMARY KEY (`Index` , `Year` , `Month` , `Day`),
-    CONSTRAINT `DayIndex` FOREIGN KEY (`Index`)
-        REFERENCES `capstone`.`index` (`Index`)
+    PRIMARY KEY (`IndexColumn` , `Year` , `Month` , `Day`),
+    CONSTRAINT `DayIndex` FOREIGN KEY (`IndexColumn`)
+        REFERENCES `capstone`.`indextable` (`IndexColumn`)
         ON DELETE RESTRICT ON UPDATE CASCADE
 )  ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `capstone`.`totaldata` (
-    `Index` BIGINT NOT NULL,
+    `IndexColumn` BIGINT NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
-    PRIMARY KEY (`Index`),
-    CONSTRAINT `TDIndex` FOREIGN KEY (`Index`)
-        REFERENCES `capstone`.`index` (`Index`)
+    PRIMARY KEY (`IndexColumn`),
+    CONSTRAINT `TDIndex` FOREIGN KEY (`IndexColumn`)
+        REFERENCES `capstone`.`indextable` (`IndexColumn`)
         ON DELETE RESTRICT ON UPDATE CASCADE
 )  ENGINE=InnoDB;
