@@ -95,7 +95,7 @@ public class databaseAgent {
 			e.printStackTrace();
 		}
 		
-		String query = "SELECT `" + SERVICE_CALLS + "`, `" + SERVICE_TIME + "` FROM `" + RAW_TABLE + "` WHERE `" + INDEX_COL + "` = " + index.toString() + " AND `" + STARTUP_TIME + "` = \"" + StartUp + "\" ORDER BY `" + YEAR + "`, `" + MONTH + "`, `" + DAY + "`, `" + HOUR + "`, `" + MINUTE + "`, `" + SECOND + "` DESC LIMIT 0 , 1";
+		String query = "SELECT `" + SERVICE_CALLS + "`, `" + SERVICE_TIME + "` FROM `" + RAW_TABLE + "` WHERE `" + INDEX_COL + "` = " + index.toString() + " AND `" + STARTUP_TIME + "` = \"" + StartUp + "\" ORDER BY `" + YEAR + "` DESC, `" + MONTH + "` DESC, `" + DAY + "` DESC, `" + HOUR + "` DESC, `" + MINUTE + "` DESC, `" + SECOND + "` DESC LIMIT 0 , 1";
 		
 		try {
 			ResultSet rs = statement.executeQuery(query);
