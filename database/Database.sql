@@ -30,10 +30,11 @@ CREATE TABLE IF NOT EXISTS `capstone`.`6mindata` (
     `Month` INT NOT NULL,
     `Day` INT NOT NULL,
     `Hour` INT NOT NULL,
-    `Interval` INT NOT NULL,
+    `Intrvl` INT NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
-    PRIMARY KEY (`IndexColumn` , `Year` , `Month` , `Day` , `Hour` , `Interval`),
+    `Norm` DECIMAL(11 , 4 ) NOT NULL,
+    PRIMARY KEY (`IndexColumn` , `Year` , `Month` , `Day` , `Hour` , `Intrvl`),
     CONSTRAINT `6MinIndex` FOREIGN KEY (`IndexColumn`)
         REFERENCES `capstone`.`indextable` (`IndexColumn`)
         ON DELETE RESTRICT ON UPDATE CASCADE
@@ -47,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `capstone`.`hourdata` (
     `Hour` INT NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
+    `Norm` DECIMAL(11 , 4 ) NOT NULL,
     PRIMARY KEY (`IndexColumn` , `Year` , `Month` , `Day` , `Hour`),
     CONSTRAINT `HourIndex` FOREIGN KEY (`IndexColumn`)
         REFERENCES `capstone`.`indextable` (`IndexColumn`)
@@ -60,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `capstone`.`daydata` (
     `Day` INT NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
+    `Norm` DECIMAL(11 , 4 ) NOT NULL,
     PRIMARY KEY (`IndexColumn` , `Year` , `Month` , `Day`),
     CONSTRAINT `DayIndex` FOREIGN KEY (`IndexColumn`)
         REFERENCES `capstone`.`indextable` (`IndexColumn`)
@@ -70,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `capstone`.`totaldata` (
     `IndexColumn` BIGINT NOT NULL,
     `Service Calls` BIGINT NOT NULL,
     `Service Time` BIGINT NOT NULL,
+    `Average` DECIMAL(11 , 4 ) NOT NULL,
     PRIMARY KEY (`IndexColumn`),
     CONSTRAINT `TDIndex` FOREIGN KEY (`IndexColumn`)
         REFERENCES `capstone`.`indextable` (`IndexColumn`)

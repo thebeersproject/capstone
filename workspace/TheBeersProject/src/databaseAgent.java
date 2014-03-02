@@ -53,6 +53,7 @@ public class databaseAgent {
 	private static final String HOUR = "Hour";
 	private static final String SERVICE_CALLS = "Service Calls";
 	private static final String SERVICE_TIME = "Service Time";
+	private static final String NORMAL = "Norm";
 	//INDEX_TABLE
 	private static final String AGNT_NAME = "Agent Name";
 	private static final String INST = "Instance";
@@ -62,7 +63,9 @@ public class databaseAgent {
 	private static final String SECOND = "Second";
 	private static final String STARTUP_TIME = "StartupTime";
 	//MIN_TABLE
-	private static final String INTERVAL = "Interval";
+	private static final String INTERVAL = "Intrvl";
+	//TOTAL_TABLE
+	private static final String AVERAGE = "Average";
 	
 	/**
 	 * Builds the insert query string
@@ -81,19 +84,48 @@ public class databaseAgent {
 	}
 	
 	/**
+	 * Calculates the average from the total table for the specified index.
+	 * @param index The index of the data
+	 * @return The current average
+	 */
+	public static Double calcAverage(Integer index){
+		Double average = null;
+		
+		Statement statement = createStmnt();
+		
+		String query = "SELECT `" + SERVICE_CALLS + "`, `" + SERVICE_TIME + "` FROM `" + TOTAL_TABLE + "` WHERE `" + INDEX_COL + "` = " + index.toString();
+		
+		try {
+			ResultSet rs = statement.executeQuery(query);
+			if (!rs.first()){
+				System.out.println("Could not find data to calculate average");
+			}
+			else{
+				Double calls = rs.getDouble(1);
+				Double time = rs.getDouble(2);
+				if(calls == 0 || time == 0)
+					average = new Double (0);
+				else
+					average = new Double(time / calls);
+			}
+			rs.close(); //Might not have to do.
+		} catch (SQLException e) {
+			System.out.println("Issue reading from database, check console!");
+			e.printStackTrace();
+		}
+		
+		return average;
+	}
+
+	/**
 	 * Attempts to find the previous values for service time and service calls.
 	 * @param index The index of the data
 	 * @return An array containing the previous values or 0 if no values;
 	 */
 	public static Long[] compareToPreviousBase(Integer index, String StartUp){
-		Statement statement = null;
 		Long[] previous = null;
-		try {
-			statement = connection.createStatement();
-		} catch (SQLException e) {
-			System.out.println("Error allocating statement on network!");
-			e.printStackTrace();
-		}
+		
+		Statement statement = createStmnt();
 		
 		String query = "SELECT `" + SERVICE_CALLS + "`, `" + SERVICE_TIME + "` FROM `" + RAW_TABLE + "` WHERE `" + INDEX_COL + "` = " + index.toString() + " AND `" + STARTUP_TIME + "` = \"" + StartUp + "\" ORDER BY `" + YEAR + "` DESC, `" + MONTH + "` DESC, `" + DAY + "` DESC, `" + HOUR + "` DESC, `" + MINUTE + "` DESC, `" + SECOND + "` DESC LIMIT 0 , 1";
 		
@@ -148,6 +180,21 @@ public class databaseAgent {
 	}
 	
 	/**
+	 * Attempts to create a statement for the connection
+	 * @return The statement
+	 */
+	private static Statement createStmnt() {
+		Statement statement = null;
+		try {
+			statement = connection.createStatement();
+		} catch (SQLException e) {
+			System.out.println("Error allocating statement on network!");
+			e.printStackTrace();
+		}
+		return statement;
+	}
+	
+	/**
 	 * Provides an array of the columns for the specified table.
 	 * @param table The table whose columns are needed.
 	 * @return The arrray of columns.
@@ -176,7 +223,7 @@ public class databaseAgent {
 			columns[9] = STARTUP_TIME;			
 		}
 		else if(table.compareToIgnoreCase(MINUTE_TABLE) == 0){
-			columns = new String[8];
+			columns = new String[9];
 			columns[0] = INDEX_COL;
 			columns[1] = YEAR;
 			columns[2] = MONTH;
@@ -185,9 +232,10 @@ public class databaseAgent {
 			columns[5] = INTERVAL;
 			columns[6] = SERVICE_CALLS;
 			columns[7] = SERVICE_TIME;
+			columns[8] = NORMAL;
 		}
 		else if(table.compareToIgnoreCase(HOUR_TABLE) == 0){
-			columns = new String[7];
+			columns = new String[8];
 			columns[0] = INDEX_COL;
 			columns[1] = YEAR;
 			columns[2] = MONTH;
@@ -195,59 +243,29 @@ public class databaseAgent {
 			columns[4] = HOUR;
 			columns[5] = SERVICE_CALLS;
 			columns[6] = SERVICE_TIME;
+			columns[7] = NORMAL;
 		}
 		else if(table.compareToIgnoreCase(DAY_TABLE) == 0){
-			columns = new String[6];
+			columns = new String[7];
 			columns[0] = INDEX_COL;
 			columns[1] = YEAR;
 			columns[2] = MONTH;
 			columns[3] = DAY;
 			columns[4] = SERVICE_CALLS;
 			columns[5] = SERVICE_TIME;
+			columns[6] = NORMAL;
 		}
 		else if(table.compareToIgnoreCase(TOTAL_TABLE) == 0){
-			columns = new String[3];
+			columns = new String[4];
 			columns[0] = INDEX_COL;
 			columns[1] = SERVICE_CALLS;
 			columns[2] = SERVICE_TIME;
+			columns[3] = AVERAGE;
 		}
 		else
 			System.out.println("unknow table");
 		
 		return columns;		
-	}
-	
-	/**
-	 * Gets an index to be used for new data. (Possible race condition?)
-	 * @return The new index.
-	 */
-	private static Integer getNewIndex(){
-		Integer index = null;
-		Statement statement = null;
-		
-		try {
-			statement = connection.createStatement();
-		} catch (SQLException e) {
-			System.out.println("Error allocating statement on network!");
-			e.printStackTrace();
-		}
-		
-		String query = "SELECT `" + INDEX_COL + "` FROM `" + INDEX_TABLE + "` WHERE 1 ORDER BY `" + INDEX_COL + "` DESC LIMIT 0 , 1";
-		
-		try {
-			ResultSet rs = statement.executeQuery(query);
-			if (!rs.first()){
-				index = 0;
-			}
-			else
-				index = rs.getInt(1) + 1;
-			rs.close(); //Might not have to do.
-		} catch (SQLException e) {
-			System.out.println("Issue reading from database, check console!");
-			e.printStackTrace();
-		}		
-		
-		return index;	
 	}
 	
 	/**
@@ -259,14 +277,7 @@ public class databaseAgent {
 	 */
 	public static Integer getIndex(String agent, String instance, String service){
 		Integer index = null;		
-		Statement statement = null;
-		
-		try {
-			statement = connection.createStatement();
-		} catch (SQLException e) {
-			System.out.println("Error allocating statement on network!");
-			e.printStackTrace();
-		}
+		Statement statement = createStmnt();
 		String query = "Select `" + INDEX_COL + "` FROM `" + INDEX_TABLE + "` WHERE `" + AGNT_NAME + "` = '" + agent + "' AND `" + INST + "` = '" + instance + "' AND `" + SRVC_NAME + "` = '" + service + "'";
 		try {
 			ResultSet rs = statement.executeQuery(query);
@@ -287,6 +298,34 @@ public class databaseAgent {
 		return index;		
 	}
 	
+	/**
+	 * Gets an index to be used for new data. (Possible race condition?)
+	 * @return The new index.
+	 */
+	private static Integer getNewIndex(){
+		Integer index = null;
+		Statement statement = createStmnt();
+		
+		String query = "SELECT MAX(`" + INDEX_COL + "`) FROM `" + INDEX_TABLE + "` WHERE 1";
+		
+		try {
+			ResultSet rs = statement.executeQuery(query);
+			if (!rs.first()){
+				index = 0;
+			}
+			/*else if(rs.getString(1) == null) //If 0 needs to be first index
+				index = 0;*/
+			else
+				index = rs.getInt(1) + 1;
+			rs.close(); //Might not have to do.
+		} catch (SQLException e) {
+			System.out.println("Issue reading from database, check console!");
+			e.printStackTrace();
+		}		
+		
+		return index;	
+	}
+		
 	/**
 	 * Turns an array of column names into the proper format for an SQL query.
 	 * @param columns The array of columns.
@@ -323,21 +362,103 @@ public class databaseAgent {
 		}
 		
 		return vals;
-	}	
+	}		
+	
+	/**
+	 * Update the average value in the total table.
+	 * @param index The index that needs to be updated
+	 * @param average The average value
+	 */
+	public static void updateAverage(Integer index, Double average){
+		Statement statement = createStmnt();
+		
+		String query = "UPDATE `" + TOTAL_TABLE + "` SET `" + AVERAGE + "` = " + average.toString() + " WHERE `" + INDEX_COL + "` = " + index.toString();
+		
+		try {
+			statement.executeUpdate(query);
+		} catch (SQLException e) {
+			System.out.println("Issue updating database, check console!");
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Updates the norm in the database
+	 * @param table The table in the database
+	 * @param values The values that need to be inserted and the values for the where clause.
+	 */
+	public static void updateNorm(String table, String[] values, Double average){
+		Double norm = null;
+		boolean skip = false;
+		//get data
+		Statement statement = createStmnt();	
+		String query =  "SELECT `" + SERVICE_CALLS + "`, `" + SERVICE_TIME + "` FROM `" + table + "` WHERE `" + INDEX_COL + "` = " + values[0] + " and `" + YEAR + "` = " + values[1] + " and `" + MONTH + "` = " + values[2] + " and `" + DAY + "` = " + values[3];		
+		if (table.compareToIgnoreCase("6mindata") == 0)
+			query += " and `" + HOUR + "` = " + values[4] + " and `" + INTERVAL + "` = " + values[5];
+		else if (table.compareToIgnoreCase("hourdata") == 0)
+			query += " and `" + HOUR + "` = " + values[4];
+		else if (table.compareToIgnoreCase("daydata") == 0)
+			;//No changes
+		else
+			System.out.println("Unrecognized table");
+		try {
+			ResultSet rs = statement.executeQuery(query);
+			if (!rs.first()){
+				System.out.println("Could not find data to calculate norm");
+				return;
+			}
+			else{
+				Double time = rs.getDouble(2);
+				Double calls = rs.getDouble(1);
+				if(time == 0 || calls == 0 || average == 0)
+					skip = true;
+				else
+					norm = ( time / calls ) / average;
+			}
+			rs.close(); //Might not have to do.
+		} catch (SQLException e) {
+			System.out.println("Issue updating database, check console!");
+			e.printStackTrace();
+		}
+		
+		
+		if(!skip){ //If the norm is zero don't need to update.
+			if(norm >= 10.0)
+				System.out.println("Hight norm for index " + values[0] + ".");
+			//update data
+			try {
+				statement = connection.createStatement();
+			}catch (SQLException e) {
+				System.out.println("Error allocating statement on network!");
+				e.printStackTrace();
+			}
+			
+			query = null;
+			if (table.compareToIgnoreCase("6mindata") == 0)
+				query = "UPDATE `" + table + "` SET `" + NORMAL + "` = " + norm.toString() + " WHERE `" + INDEX_COL + "` = " + values[0] + " and `" + YEAR + "` = " + values[1] + " and `" + MONTH + "` = " + values[2] + " and `" + DAY + "` = " + values[3] + " and `" + HOUR + "` = " + values[4] + " and `" + INTERVAL + "` = " + values[5];
+			else if (table.compareToIgnoreCase("hourdata") == 0)
+				query = "UPDATE `" + table + "` SET `" + NORMAL + "` = " + norm.toString() + " WHERE `" + INDEX_COL + "` = " + values[0] + " and `" + YEAR + "` = " + values[1] + " and `" + MONTH + "` = " + values[2] + " and `" + DAY + "` = " + values[3] + " and `" + HOUR + "` = " + values[4];
+			else if (table.compareToIgnoreCase("daydata") == 0)
+				query = "UPDATE `" + table + "` SET `" + NORMAL + "` = " + norm.toString() + " WHERE `" + INDEX_COL + "` = " + values[0] + " and `" + YEAR + "` = " + values[1] + " and `" + MONTH + "` = " + values[2] + " and `" + DAY + "` = " + values[3];
+			else
+				System.out.println("Unrecognized table");
+			
+			try {
+				statement.executeUpdate(query);
+			} catch (SQLException e) {
+				System.out.println("Issue updating database, check console!");
+				e.printStackTrace();
+			}
+		}
+	}
 	
 	/**
 	 * Updates data in the database
 	 * @param table The table in the database
 	 * @param values The values that need to be inserted and the values for the where clause.
 	 */
-	public static void updateData(String table, String[] values){
-		Statement statement = null;
-		try {
-			statement = connection.createStatement();
-		}catch (SQLException e) {
-			System.out.println("Error allocating statement on network!");
-			e.printStackTrace();
-		}
+	public static void updateSrvcData(String table, String[] values){
+		Statement statement = createStmnt();
 		
 		String query = null;
 		if (table.compareToIgnoreCase("6mindata") == 0)
@@ -371,13 +492,7 @@ public class databaseAgent {
 			return;
 		}
 			
-		Statement statement = null;
-		try {
-			statement = connection.createStatement();
-		}catch (SQLException e) {
-			System.out.println("Error allocating statement on network!");
-			e.printStackTrace();
-		}
+		Statement statement = createStmnt();
 		
 		String query = buildInsertQuery(table, values, columns);
 		
@@ -386,7 +501,7 @@ public class databaseAgent {
 		}catch (MySQLIntegrityConstraintViolationException e){
 			//Primary key is already in database
 			if(table.compareToIgnoreCase(INDEX_TABLE) != 0 && table.compareToIgnoreCase(RAW_TABLE) != 0){
-				updateData(table, values);
+				updateSrvcData(table, values);
 			}
 		} catch (SQLException e) {
 			System.out.println("Issue writing data to database, check console!");
