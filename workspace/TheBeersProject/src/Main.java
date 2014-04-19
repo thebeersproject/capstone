@@ -20,7 +20,7 @@ public class Main {
 	 * @param args Not needed
 	 */
 	public static void main(String[] args) {
-	   	databaseAgent.connectToDatabase();
+	   	DatabaseAgent.connectToDatabase();
 	   	
     	String file = "AGENT_STATUS_13_11_14.txt";
     	
@@ -117,7 +117,7 @@ public class Main {
 				vfeiMsg  = false;
 			}
 			if (vfeiMsg) {
-				new agentHealthCollector(msg, timeStamp);
+				new AgentHealthCollector(msg, timeStamp);
 			} else {
 				//Assume timeStamp for next message
 				timeStamp = strLine;

@@ -11,7 +11,7 @@ import de.systemagmbh.interfaces.message.ISysMessageItem;
  * @author
  *
  */
-public class serviceData {
+public class ServiceData {
 	String agentName = null;
 	String instance = null;
 	List<SrvData> services = new ArrayList<SrvData>();
@@ -19,7 +19,7 @@ public class serviceData {
 	String startupTime = null;
 	String newLine = System.getProperty("line.separator");
 
-	public serviceData(CSysVfeiMessage msg, String timeStampStr) {
+	public ServiceData(CSysVfeiMessage msg, String timeStampStr) {
 		//parse this message
 		int size = msg.size();
 		for (int x=0; x<size; x++) {

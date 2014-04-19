@@ -11,15 +11,15 @@ import de.systemagmbh.components.message.vfei.CSysVfeiMessage;
  * @author
  *
  */
-public class agentHealthCollector {
+public class AgentHealthCollector {
 	
 	/**
 	 * Extracts the data from 
 	 * @param timeStamp The time stamp for the data
 	 * @param msg The VfeiMessage
 	 */
-	public agentHealthCollector(CSysVfeiMessage msg, String timeStamp){
-		toDatabase(new serviceData(msg, timeStamp));
+	public AgentHealthCollector(CSysVfeiMessage msg, String timeStamp){
+		toDatabase(new ServiceData(msg, timeStamp));
 	}
 	
 	
@@ -27,9 +27,9 @@ public class agentHealthCollector {
 	 * Takes a set of data and calls the appropriate insert/query functions.
 	 * @param db The database agent containing the data from the file.
 	 */
-	private void toDatabase(serviceData data){
+	private void toDatabase(ServiceData data){
 		//int i = 0;
-		for(serviceData.SrvData sd : data.services){
+		for(ServiceData.SrvData sd : data.services){
 			if(sd.serviceCnt == 0 && sd.serviceTotalTime == 0)
 				continue;
 			
@@ -38,41 +38,41 @@ public class agentHealthCollector {
 				System.out.println("Terminated early for testing purposes. See line 53(ish) in agentHealthCollector to change.");
 				System.exit(i);
 			}
-			i++; */
+			i++;*/
 			
 			//Index table
-			Integer index = databaseAgent.getIndex(data.agentName, data.instance, sd.serviceName);
+			Integer index = DatabaseAgent.getIndex(data.agentName, data.instance, sd.serviceName);
 			
 			//Calc Diff
-			Long[] previous = databaseAgent.compareToPreviousBase(index, data.startupTime);
+			Long[] previous = DatabaseAgent.compareToPreviousBase(index, data.startupTime);
 			Long[] diff = {sd.serviceCnt - previous[0], sd.serviceTotalTime - previous[1]};
 			
 			//basedata table -- Do this after cacluating difference from previous so that this data wont be used.
 			String[] bd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), data.timeStamp.minute.toString(), data.timeStamp.second.toString(), sd.serviceCnt.toString(), sd.serviceTotalTime.toString(), data.startupTime};
-			databaseAgent.writeData(databaseAgent.RAW_TABLE, bd_values);
+			DatabaseAgent.writeData(DatabaseAgent.RAW_TABLE, bd_values);
 			
 			//totaldata -- Do this before min, hour, day tables so that avg is available.
 			String[] td_values = {index.toString(), diff[0].toString(), diff[1].toString(), "0"}; //0 is a temporary value.
-			databaseAgent.writeData(databaseAgent.TOTAL_TABLE, td_values);
+			DatabaseAgent.writeData(DatabaseAgent.TOTAL_TABLE, td_values);
 			
 			//Calc Average
-			Double average = databaseAgent.calcAverage(index);
-			databaseAgent.updateAverage(index, average);
+			Double average = DatabaseAgent.calcAverage(index);
+			DatabaseAgent.updateAverage(index, average);
 			
 			//6Min table
 			String[] minD_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), determine_interval(data.timeStamp.minute).toString() , diff[0].toString(), diff[1].toString(), "0"};
-			databaseAgent.writeData(databaseAgent.MINUTE_TABLE, minD_values);			
-			databaseAgent.updateNorm(databaseAgent.MINUTE_TABLE, minD_values, average);
+			DatabaseAgent.writeData(DatabaseAgent.MINUTE_TABLE, minD_values);			
+			DatabaseAgent.updateNorm(DatabaseAgent.MINUTE_TABLE, minD_values, average);
 			
 			//hourdata
 			String[] hd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), data.timeStamp.hour.toString(), diff[0].toString(), diff[1].toString(), "0"};
-			databaseAgent.writeData(databaseAgent.HOUR_TABLE, hd_values);			
-			databaseAgent.updateNorm(databaseAgent.HOUR_TABLE, hd_values, average);
+			DatabaseAgent.writeData(DatabaseAgent.HOUR_TABLE, hd_values);			
+			DatabaseAgent.updateNorm(DatabaseAgent.HOUR_TABLE, hd_values, average);
 			
 			//daydata
 			String[] dd_values = {index.toString(), data.timeStamp.year.toString(), data.timeStamp.month.toString(), data.timeStamp.day.toString(), diff[0].toString(), diff[1].toString(), "0"};
-			databaseAgent.writeData(databaseAgent.DAY_TABLE, dd_values);			
-			databaseAgent.updateNorm(databaseAgent.DAY_TABLE, dd_values, average);
+			DatabaseAgent.writeData(DatabaseAgent.DAY_TABLE, dd_values);			
+			DatabaseAgent.updateNorm(DatabaseAgent.DAY_TABLE, dd_values, average);
 			
 		}
 	}
